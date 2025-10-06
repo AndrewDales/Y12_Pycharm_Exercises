@@ -1,13 +1,23 @@
 # Dog OOP exercises
+from pywin.mfc.object import Object
+
 
 class Dog:
+    species = "Canis familiaris"
+
     def __init__(self, name, age):
         self.name = name
         self.age = age
 
-    def speaks(self):
-        return f'{self.name} says "woof", "woof"'
+    def __str__(self):
+        return f"{self.name} is {self.age} years old"
 
+    def speak(self, sound):
+        return f"{self.name} barks {sound}"
 
-rufus = Dog('Rufus', 8)
+class Dachshund(Dog):
+    def speak(self, sound="Arf! Arf!"):
+        return super().speak(sound)
+
+rufus = Dachshund('Rufus', 8)
 fido = Dog('Fido', 6)

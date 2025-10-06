@@ -15,7 +15,7 @@ class Polygon:
     def __init__(self, points: list[Coord]):
         self.points = points
 
-    def perimeter(self):
+    def perimeter(self) -> float:
         distances = [p0.distance(p1) for p0, p1 in zip(self.points[1:], self.points[:-1])]
         distances.append(self.points[0].distance(self.points[-1]))
         return sum(distances)
@@ -23,7 +23,7 @@ class Polygon:
     def plot(self):
         fig, ax = plt.subplots()
         points = np.array([coord.point for coord in self.points])
-        ax.fill(points.T[0], points.T[1], edgecolor='black', linewidth=3)
+        ax.fill(points[:, 0], points[:, 1], edgecolor='black', linewidth=3)
         plt.show()
 
 
@@ -31,7 +31,7 @@ class Triangle(Polygon):
     def __init__(self, p0: Coord, p1: Coord, p2: Coord):
         super().__init__([p0, p1, p2])
 
-    def area(self):
+    def area(self) -> float:
         a = self.points[0].distance(self.points[1])
         b = self.points[1].distance(self.points[2])
         c = self.points[2].distance(self.points[0])
