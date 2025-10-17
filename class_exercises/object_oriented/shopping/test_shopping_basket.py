@@ -37,17 +37,4 @@ def test_add_more_than_stock(setup_items_and_basket):
         basket.addItem(tomatoSoup, 20)
 
 
-def test_add_item():
-    assert False
 
-
-def test_remove_item():
-    assert False
-
-
-def test_update_item():
-    assert False
-
-
-def test_reset():
-    assert False
