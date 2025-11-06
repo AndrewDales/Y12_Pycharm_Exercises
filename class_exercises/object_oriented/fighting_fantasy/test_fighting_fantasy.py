@@ -1,6 +1,6 @@
 import pytest
 import random
-from class_exercises.object_oriented.fighting_fantasy.fighting_fantasy import Character, Game, PlayerCharacter
+from fighting_fantasy import Character, Game, PlayerCharacter
 
 
 class TestCharacter:
@@ -25,11 +25,11 @@ class TestCharacter:
         assert orc.roll == 4
         assert orc.score == orc.roll + orc.skill
 
-    def test_wound(self, characters):
+    def test_take_hit(self, characters):
         orc = characters[0]
-        orc.wound()
+        orc.take_hit()
         assert orc.stamina == 10
-        orc.wound(1)
+        orc.take_hit(1)
         assert orc.stamina == 9
 
     def test_fight_round(self, characters):
@@ -44,7 +44,7 @@ class TestCharacter:
 
     def test_is_dead(self, characters):
         orc = characters[0]
-        orc.wound(12)
+        orc.take_hit(12)
         assert orc.is_dead
 
     def test_set_is_dead(self, characters):
@@ -67,13 +67,27 @@ class TestCharacter:
 
 
 class TestPlayerCharacter:
-    def test_generate_pc(self):
+    @pytest.fixture
+    def player_character(self):
         random.seed(10_001)
-        pc = PlayerCharacter.generate_player_character("Sir Andrew")
+        return PlayerCharacter.generate_player_character("Sir Tom")
+
+    def test_generate_pc(self, player_character):
+        pc = player_character
         assert pc.skill == 9
         assert pc.stamina == 14
         assert pc.luck == 10
-        assert pc.__repr__() == "PlayerCharacter('Sir Andrew', skill=9, stamina=14, luck=10)"
+        assert pc.__repr__() == "PlayerCharacter('Sir Tom', skill=9, stamina=14, luck=10)"
+
+    def test_test_luck(self, player_character):
+        for _ in range(5):
+            lucky = player_character.test_luck()
+            assert lucky == True
+        lucky = player_character.test_luck()
+        print(player_character.roll)
+        assert lucky == False
+        assert player_character.roll == 7
+        assert player_character.luck == 4
 
 
 class TestGame:

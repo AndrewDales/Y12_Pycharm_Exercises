@@ -25,7 +25,7 @@ class Character:
         self.roll = dice_sum(num_dice=2)
         self.score = self.roll + self.skill
 
-    def wound(self, damage=2):
+    def take_hit(self, damage=2):
         self.stamina -= damage
 
     def fight_round(self, other):
@@ -33,14 +33,14 @@ class Character:
         other.find_score()
         if self.score > other.score:
             result = 'won'
-            other.wound()
+            other.take_hit()
         elif self.score < other.score:
             result = 'lost'
-            self.wound()
+            self.take_hit()
         else:
             result = 'draw'
-            self.wound(1)
-            other.wound(1)
+            self.take_hit(1)
+            other.take_hit(1)
         return result
 
     def return_character_status(self):
@@ -68,6 +68,16 @@ class PlayerCharacter(Character):
         super().__init__(name, skill, stamina)
         self.luck = luck
 
+    def test_luck(self):
+        dice_roll = dice_sum(num_dice=2)
+        if dice_roll <= self.luck:
+            lucky = True
+        else:
+            lucky = False
+        self.roll = dice_roll
+        self.luck -= 1
+        return lucky
+
     @classmethod
     def generate_player_character(cls, name):
         # Roll for skill stamina and luck and pass them to the cls constructor, returning the created instance
@@ -84,8 +94,7 @@ class PlayerCharacter(Character):
 
 
 class Game:
-    """ Game class - controls the Fighting Fantasy game class
-    """
+    """ Game class - controls the Fighting Fantasy game class """
     @classmethod
     def load_creatures(cls):
         creatures = [Character("Dragon", 10, 22),
