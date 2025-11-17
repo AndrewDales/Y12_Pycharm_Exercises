@@ -32,19 +32,21 @@ class MainFrame(tk.Frame):
         self.place_widgets()
 
     def place_widgets(self):
-        self.txt.grid(row=0,
-                      column=0,
-                      padx=10,
-                      pady=10,
-                      sticky="NEWS",
-                      )
-        self.btn.grid(row=0, column=1)
-        self.edt.grid(row=1, column=0)
-        self.sld.grid(row=1, column=1)
+        settings = {'padx': 10, 'pady': 10, 'sticky': 'nswe'}
+        self.txt.grid(row=0, column=0, **settings)
+        self.btn.grid(row=0, column=1, **settings)
+        self.edt.grid(row=1, column=0, **settings)
+        self.sld.grid(row=1, column=1, **settings)
+
+        self.columnconfigure(0, weight=2)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=3)
 
 
 if __name__ == '__main__':
     root = tk.Tk()
+    root.geometry('500x500+100+100')
     root.title("Tkinter Class Example")
     main_frame = MainFrame(root)
     main_frame.pack(fill=tk.BOTH, expand=True)
