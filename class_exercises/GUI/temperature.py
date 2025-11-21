@@ -14,27 +14,36 @@ class Temperature:
 
     @property
     def celsius(self):
-        return self._celsius
+        return f'{self._celsius} \u00B0C'
 
     @celsius.setter
-    def celsius(self, value):
+    def celsius(self, value: float):
+        if value < -273.15:
+            raise ValueError('Celsius value must be greater than absolute zero (-273.15 \u00B0C)')
         self._celsius = value
 
     @property
-    def fahrenheit(self):
-        return (self._celsius * 9 / 5) + 32
+    def fahrenheit(self)  -> float:
+        fahrenheit = (self._celsius * 9 / 5) + 32
+        return fahrenheit
 
     @fahrenheit.setter
-    def fahrenheit(self, value):
+    def fahrenheit(self, value: float):
         self._celsius = (value - 32) * 5/9
 
     @property
-    def kelvin(self):
-        return self._celsius + 273.15
+    def kelvin(self) -> float:
+        kelvin = self._celsius + 273.15
+        return kelvin
 
     @kelvin.setter
-    def kelvin(self, value):
+    def kelvin(self, value: float):
         self._celsius = value - 273.15
 
     def __repr__(self):
         return f"Temperature(celsius={self._celsius:.1f})"
+
+if __name__ == '__main__':
+    temp = Temperature(25)
+    # Note PyCharm is warning me not to do this!
+    print(temp._celsius)
