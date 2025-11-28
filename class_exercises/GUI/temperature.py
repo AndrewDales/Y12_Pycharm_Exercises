@@ -14,7 +14,7 @@ class Temperature:
 
     @property
     def celsius(self):
-        return f'{self._celsius} \u00B0C'
+        return self.celsius
 
     @celsius.setter
     def celsius(self, value: float):
@@ -29,6 +29,8 @@ class Temperature:
 
     @fahrenheit.setter
     def fahrenheit(self, value: float):
+        if value < -459.67:
+            raise ValueError('Kelvin value must be greater than absolute zero (0 \u00B0K)')
         self._celsius = (value - 32) * 5/9
 
     @property
@@ -38,6 +40,8 @@ class Temperature:
 
     @kelvin.setter
     def kelvin(self, value: float):
+        if value < 0:
+            raise ValueError('Kelvin value must be greater than absolute zero (0 \u00B0K)')
         self._celsius = value - 273.15
 
     def __repr__(self):

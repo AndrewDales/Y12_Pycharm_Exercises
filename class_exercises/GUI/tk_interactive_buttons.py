@@ -3,7 +3,7 @@ import tkinter as tk
 
 class ClickApp(tk.Tk):
     def __init__(self):
-        # Initiialised the tk.Tk app
+        # Initialised the tk.Tk app
         super().__init__()
 
         # Create a click counter
