@@ -10,8 +10,6 @@ def only_decimal(char, word):
         check = True
     elif char == '.' and not '.' in word[:-1]:
         check = True
-    else:
-        check = False
     return check
 
 class TemperatureGUIApp(tk.Tk):
@@ -81,7 +79,7 @@ class TemperatureConverterFrame(tk.Frame):
             self.temperature.celsius = temp_c
             temp_f = self.temperature.fahrenheit
             output_message = f'{temp_c:.1f} \N{DEGREE CELSIUS} = {temp_f:.1f} \N{DEGREE FAHRENHEIT}'
-        except ValueError :
+        except ValueError:
             output_message = f'Enter a temperature in Celsius'
         self.output_label.config(text=output_message)
 
