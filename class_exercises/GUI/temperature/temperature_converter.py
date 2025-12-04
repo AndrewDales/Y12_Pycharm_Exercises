@@ -2,12 +2,15 @@ import tkinter as tk
 from temperature import Temperature
 
 def only_decimal(char, word):
+    """Validate that the new char entered and the resulting word is a valid start to a float"""
     check = False
+    # Allow any digit
     if char.isdigit():
         check = True
     # Allow a single negative sign
     elif word == '-':
         check = True
+    # Allow a . if no . already exists
     elif char == '.' and not '.' in word[:-1]:
         check = True
     return check
@@ -59,6 +62,9 @@ class TemperatureConverterFrame(tk.Frame):
 
         # Bind all keys. The callback will determine the action depending on the key pressed
         self.master.bind("<KeyRelease>", self.on_key_release)
+
+        # Run the do_conversion to get the initial message
+        self.do_conversion()
 
     def place_widgets(self):
         padding_options = {'padx': 5, 'pady': 5}
