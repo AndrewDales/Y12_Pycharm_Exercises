@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="student" uuid="3911b0a9-4029-42f2-9179-1d680e9f7425">
+    <data-source source="LOCAL" name="sm_app" uuid="92a086aa-8e05-495f-a52a-03ad15f7b523">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\dalesa\OneDrive - Highgate School\2025-26\12Q-Cs1 Computing\Y12 PYcharm Exercises\class_exercises\Database\sqlite_student\student.sqlite</jdbc-url>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/class_exercises/Database/social_media/sm_app.sqlite</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
       <libraries>
         <library>
