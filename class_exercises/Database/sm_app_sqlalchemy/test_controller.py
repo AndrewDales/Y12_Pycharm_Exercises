@@ -3,9 +3,9 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.exc import IntegrityError
 
-from Database.sm_app_sqlalchemy.models import User, Comment, Post, Base
-from Database.sm_app_sqlalchemy.write_to_db import write_initial_data
-from Database.sm_app_sqlalchemy.controller import Controller
+from .models import User, Comment, Post, Base
+from .write_to_db import write_initial_data
+from .controller import Controller
 
 # test_db_location = 'sqlite:///:memory:'
 test_db_location = 'sqlite:///test_sm.db'
@@ -59,6 +59,7 @@ class TestDataBase:
         assert e_post.user == user
 
 class TestController:
+    # Set up a test database fixture by creating the database and writing in initial data
     @pytest.fixture(scope="class", autouse=True)
     def test_db(self):
         engine = sa.create_engine(test_db_location, echo=False)
@@ -96,6 +97,11 @@ class TestController:
                                 }
         # print(controller.current_posts)
         assert(len(controller.current_posts) == 1)
+
+    def test_delete_user(self, controller):
+        controller.delete_user('Alice')
+        alice_posts = controller.get_posts('Alice')
+        assert alice_posts is None
 
     def test_get_comments(self):
         assert False

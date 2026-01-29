@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 
-from Database.sm_app_sqlalchemy.models import User, Post, Comment
+from class_exercises.Database.sm_app_sqlalchemy.models import User, Post, Comment
 
 
 class Controller:
@@ -27,16 +27,25 @@ class Controller:
             self.set_current_user_from_name(user.name)
         return self.current_user
 
+    def delete_user(self, name):
+        with so.Session(bind=self.engine) as session:
+            user = session.scalars(sa.select(User).where(User.name == name)).one_or_none()
+            session.delete(user)
+            session.commit()
+
     def get_posts(self, user_name: str) -> list[dict]:
         with so.Session(bind=self.engine) as session:
             user = session.scalars(sa.select(User).where(User.name == user_name)).one_or_none()
-            posts_info = [{'id': post.id,
-                           'title' : post.title,
-                           'description': post.description,
-                           'number_likes': len(post.liked_by_users),
-                           }
-                          for post in user.posts]
-            self.current_posts = user.posts
+            if user:
+                posts_info = [{'id': post.id,
+                               'title' : post.title,
+                               'description': post.description,
+                               'number_likes': len(post.liked_by_users),
+                               }
+                              for post in user.posts]
+                self.current_posts = user.posts
+            else:
+                posts_info = None
         return posts_info
 
 

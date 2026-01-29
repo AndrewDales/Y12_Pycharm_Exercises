@@ -1,3 +1,5 @@
+# class_exercises/Database/sm_app_sqlalchemy/models.py
+
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -12,15 +14,12 @@ class Base(so.DeclarativeBase):
 likes_table = sa.Table(
     'likes',
     Base.metadata,
-    sa.Column('user_id',
-              sa.Integer,
-              sa.ForeignKey('users.id', ondelete='CASCADE'),
-              nullable=False),
-    sa.Column('post_id',
-              sa.Integer,
-              sa.ForeignKey('posts.id', ondelete='CASCADE'),
-              nullable=False),
-    sa.PrimaryKeyConstraint('user_id', 'post_id')
+    sa.Column('user_id', sa.Integer,
+              sa.ForeignKey(column='users.id', ondelete='CASCADE'),
+              primary_key=True),
+    sa.Column('post_id', sa.Integer,
+              sa.ForeignKey(column='posts.id', ondelete='CASCADE'),
+              primary_key=True),
 )
 
 class User(Base):
@@ -35,13 +34,13 @@ class User(Base):
         back_populates='user',
         cascade='all, delete-orphan',
     )
-    # Many-to-many: posts that are liked by the user
+    # Many-to-many: posts that are liked by the user - defined by the likes table
     liked_posts: Mapped[list['Post']] = relationship(
         secondary=likes_table,
         back_populates='liked_by_users',
     )
     # One-to-many: Comments authored by the user
-    comments_made: so.Mapped[list['Comment']] = relationship(
+    comments_made: Mapped[list['Comment']] = relationship(
         back_populates='user',
         cascade='all, delete-orphan',
     )
@@ -59,15 +58,15 @@ class Post(Base):
         nullable=False,
         index=True,
     )
-    # Author (many posts -> one user)
-    user: Mapped["User"] = relationship(
-        back_populates='posts',
-    )
-
     # Many-to-many: which users liked this post
     liked_by_users: Mapped[List["User"]] = relationship(
         secondary=likes_table,
         back_populates='liked_posts',
+    )
+
+    # Author (many posts -> one user)
+    user: Mapped["User"] = relationship(
+        back_populates='posts',
     )
 
     # One-to-many: comments that are made about this post
@@ -87,6 +86,7 @@ class Post(Base):
 class Comment(Base):
     __tablename__ = 'comments'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    comment: Mapped[str]
     user_id: Mapped[int] = mapped_column(
         sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False
     )
@@ -94,9 +94,14 @@ class Comment(Base):
         sa.ForeignKey('posts.id', ondelete='CASCADE'), nullable=False
     )
 
-    comment: Mapped[str]
-    post: Mapped['Post'] = so.relationship(back_populates='comments')
+    # Many-to-one relationship defining the author of a comment
     user: Mapped['User'] = so.relationship(back_populates='comments_made')
+
+    # Many-to-one relationship defining the post which is being commented about
+    post: Mapped['Post'] = so.relationship(back_populates='comments')
+
 
     def __repr__(self):
         return f"Comment(user_id={self.user_id}, post_id={self.post_id}, comment='{self.comment}')"
+
+

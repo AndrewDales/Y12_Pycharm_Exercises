@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from models import User, Post, Comment, Base
+from class_exercises.Database.sm_app_sqlalchemy.models import User, Post, Comment, Base
 
 def delete_existing_data(engine):
     # Delete in dependency order: child tables first, then parents
