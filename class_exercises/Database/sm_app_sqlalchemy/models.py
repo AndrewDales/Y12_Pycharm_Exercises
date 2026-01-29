@@ -1,45 +1,82 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import List, Optional
 
 # Base is called an Abstract Base Class - our SQL Alchemy models will inherit from this class
 class Base(so.DeclarativeBase):
     pass
 
 # Define the likes table as a secondary table
+# The primary key for the table is set to be the composite key from the two FKs
 likes_table = sa.Table(
     'likes',
     Base.metadata,
-    sa.Column('id', sa.Integer, primary_key=True),
-    sa.Column('user_id', sa.Integer, sa.ForeignKey('users.id'), nullable=False),
-    sa.Column('post_id', sa.Integer, sa.ForeignKey('posts.id'), nullable=False),
+    sa.Column('user_id',
+              sa.Integer,
+              sa.ForeignKey('users.id', ondelete='CASCADE'),
+              nullable=False),
+    sa.Column('post_id',
+              sa.Integer,
+              sa.ForeignKey('posts.id', ondelete='CASCADE'),
+              nullable=False),
+    sa.PrimaryKeyConstraint('user_id', 'post_id')
 )
 
 class User(Base):
     __tablename__ = 'users'
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, autoincrement=True)
-    name: so.Mapped[str] = so.mapped_column(unique=True)
-    age: so.Mapped[int|None]
-    gender: so.Mapped[str|None]
-    nationality: so.Mapped[str|None]
-    posts: so.Mapped[list['Post']] = so.relationship(back_populates='user')
-    liked_posts: so.Mapped[list['Post']] = so.relationship(secondary=likes_table, back_populates='liked_by_users')
-    comments_made: so.Mapped[list['Comment']] = so.relationship(back_populates='user')
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(unique=True, index=True)
+    age: Mapped[Optional[int]]
+    gender: Mapped[Optional[str]]
+    nationality: Mapped[Optional[str]]
+    # One-to-many: posts authored by the user
+    posts: Mapped[list['Post']] = relationship(
+        back_populates='user',
+        cascade='all, delete-orphan',
+    )
+    # Many-to-many: posts that are liked by the user
+    liked_posts: Mapped[list['Post']] = relationship(
+        secondary=likes_table,
+        back_populates='liked_by_users',
+    )
+    # One-to-many: Comments authored by the user
+    comments_made: so.Mapped[list['Comment']] = relationship(
+        back_populates='user',
+        cascade='all, delete-orphan',
+    )
 
     def __repr__(self):
         return f"User(name='{self.name}', age={self.age}, gender='{self.gender}', nationality='{self.nationality}')"
 
 class Post(Base):
     __tablename__ = 'posts'
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, autoincrement=True)
-    title: so.Mapped[str]
-    description: so.Mapped[str]
-    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('users.id'))
-    user: so.Mapped["User"] = so.relationship(back_populates='posts')
-    liked_by_users: so.Mapped[list["User"]] = so.relationship(secondary=likes_table,
-                                                              back_populates='liked_posts')
-    comments: so.Mapped[list["Comment"]] = so.relationship(back_populates='post')
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    title: Mapped[str]
+    description: Mapped[str]
+    user_id: Mapped[int] = mapped_column(
+        sa.ForeignKey('users.id', ondelete='CASCADE'),
+        nullable=False,
+        index=True,
+    )
+    # Author (many posts -> one user)
+    user: Mapped["User"] = relationship(
+        back_populates='posts',
+    )
 
+    # Many-to-many: which users liked this post
+    liked_by_users: Mapped[List["User"]] = relationship(
+        secondary=likes_table,
+        back_populates='liked_posts',
+    )
+
+    # One-to-many: comments that are made about this post
+    comments: Mapped[List["Comment"]] = relationship(
+        back_populates='post',
+        cascade='all, delete-orphan',
+    )
+
+    # For efficiency, it would be better to include this as a column_property with a subquery to count the users
     @property
     def number_of_likes(self) -> int:
         return len(self.liked_by_users)
@@ -49,12 +86,17 @@ class Post(Base):
 
 class Comment(Base):
     __tablename__ = 'comments'
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, autoincrement=True)
-    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('users.id'))
-    post_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('posts.id'))
-    comment: so.Mapped[str]
-    post: so.Mapped['Post'] = so.relationship(back_populates='comments')
-    user: so.Mapped['User'] = so.relationship(back_populates='comments_made')
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False
+    )
+    post_id: so.Mapped[int] = so.mapped_column(
+        sa.ForeignKey('posts.id', ondelete='CASCADE'), nullable=False
+    )
+
+    comment: Mapped[str]
+    post: Mapped['Post'] = so.relationship(back_populates='comments')
+    user: Mapped['User'] = so.relationship(back_populates='comments_made')
 
     def __repr__(self):
         return f"Comment(user_id={self.user_id}, post_id={self.post_id}, comment='{self.comment}')"

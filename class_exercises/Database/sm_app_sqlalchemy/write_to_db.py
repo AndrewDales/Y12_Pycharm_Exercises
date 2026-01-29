@@ -1,6 +1,16 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from Database.sm_app_sqlalchemy.models import User, Post, Comment
+from models import User, Post, Comment, Base
+
+def delete_existing_data(engine):
+    # Delete in dependency order: child tables first, then parents
+    with engine.begin() as conn:
+        meta = Base.metadata
+        # Resolve order via foreign keys (topologically sort)
+        sorted_tables = meta.sorted_tables  # children appear before parents
+        for table in sorted_tables:
+            conn.execute(sa.delete(table))
+
 
 def write_initial_data(engine):
     # Create a session
@@ -67,4 +77,5 @@ def write_initial_data(engine):
 
 if __name__ == "__main__":
     sqlite_engine = sa.create_engine('sqlite:///social_media.db', echo=True)
+    delete_existing_data(sqlite_engine)
     write_initial_data(sqlite_engine)
