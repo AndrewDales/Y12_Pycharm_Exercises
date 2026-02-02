@@ -54,12 +54,13 @@ class CLI:
         return self.login
 
     def user_home(self):
-        self.show_title(f'{self.controller.current_user.name} Home Screen')
-        print(f'Name: {self.controller.current_user.name}')
-        print(f'Age: {self.controller.current_user.age}')
-        print(f'Nationality: {self.controller.current_user.nationality}')
+        user = self.controller.get_user_info()
+        self.show_title(f'{user["name"]} Home Screen')
+        print(f'Name: {user["name"]}')
+        print(f'Age: {user["age"]}')
+        print(f'Nationality: {user["name"]}')
 
-        menu_items = {'Show your posts': lambda: self.show_posts(self.controller.current_user.name),
+        menu_items = {'Show your posts': lambda: self.show_posts(user['name']),
                       'Show posts from another user': self.show_posts,
                       'Add post': self.write_post,
                       'Logout': self.login,
@@ -83,14 +84,14 @@ class CLI:
             user_name = menu_choice
 
         self.show_title(f"{user_name}'s Posts")
-        self.controller.get_posts(user_name)
+        posts = self.controller.get_user_posts(user_name)
 
-        for post in self.controller.current_posts:
-            print(f'Title: {post.title}')
-            print(f'Content: {post.description}')
-            print(f'Likes: {post.number_of_likes}')
-            self.show_comments(post.id)
-        if not self.controller.current_posts:
+        for post in posts:
+            print(f'Title: {post["title"]}')
+            print(f'Content: {post["description"]}')
+            print(f'Likes: {post["number_likes"]}')
+            self.show_comments(post['id'])
+        if not posts:
             print('No Posts')
 
         menu_items = {'Like a post': self.select_like_post,
@@ -115,22 +116,27 @@ class CLI:
     def write_post(self):
         title = input('Title: ')
         content = input('Content: ')
-        self.controller.add_post(title, content)
+        self.controller.write_new_post(title, content)
 
         return self.user_home
 
     def select_like_post(self):
+        viewed_user_id = self.controller.viewing_post_user_id
+        viewed_user_info = self.controller.get_user_info(viewed_user_id)
+        viewed_user_name = viewed_user_info['name']
+
         self.show_title("Like posts")
         print("Select a post")
-        posts = self.controller.current_posts
-        menu_items = {post.description: post.id for post in posts}
+
+        posts = self.controller.get_user_posts(viewed_user_name)
+        menu_items = {post['description']: post['id'] for post in posts}
         menu_items['Return to home'] = None
         menu_choice = pyip.inputMenu(list(menu_items.keys()),
                                      prompt='\nSelect an action\n',
                                      numbered=True,
                                      )
         if post_id := menu_items[menu_choice]:
-            self.controller.like_post(post_id)
+            self.controller.like_post_toggle(post_id)
         return self.user_home
 
     def comment_on_post(self):

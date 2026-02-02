@@ -3,9 +3,9 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.exc import IntegrityError
 
-from Database.sm_app_sqlalchemy.models import User, Comment, Post, Base
-from Database.sm_app_sqlalchemy.write_to_db import write_initial_data
-from Database.sm_app_sqlalchemy.controller import Controller
+from class_exercises.Database.sm_app_sqlalchemy.models import User, Comment, Post, Base
+from class_exercises.Database.sm_app_sqlalchemy.write_to_db import write_initial_data
+from class_exercises.Database.sm_app_sqlalchemy.controller import Controller
 
 # test_db_location = 'sqlite:///:memory:'
 test_db_location = 'sqlite:///test_sm.db'
@@ -74,28 +74,31 @@ class TestController:
         return control
 
     def test_set_current_user_from_name(self, controller):
-        controller.set_current_user_from_name('Alice')
-        assert controller.current_user.name == 'Alice'
-        assert controller.current_user.age == 30
+        user = controller.set_current_user_from_name('Alice')
+        assert controller.current_user_id == 1
+        assert user.name == 'Alice'
+        assert user.age == 30
 
     def test_get_user_names(self, controller):
         names = controller.get_user_names()
         assert names == ['Alice', 'Bob', 'Charlie', 'Diana']
 
     def test_create_user(self, controller):
-        user = controller.create_user("Mary", 30, "Female", "Dutch")
-        assert controller.current_user.name == "Mary"
-        assert controller.current_user == user
+        user = controller.create_user("Mary", 30, "female", "Dutch")
+        assert controller.current_user_id == user.id
+        assert user.name == "Mary"
+        assert user.age == 30
+        assert user.gender == "female"
+        assert user.nationality == "Dutch"
 
     def test_get_posts(self, controller):
-        alice_posts = controller.get_posts('Alice')
+        alice_posts = controller.get_user_posts('Alice')
         assert alice_posts[0] == {'id': 1,
                                   'title': 'Exploring the Rocky Mountains',
                                   'description': 'Just returned from an amazing trip to the Rockies! The views were breathtaking and the hikes were exhilarating.',
                                   'number_likes': 2,
                                 }
-        # print(controller.current_posts)
-        assert(len(controller.current_posts) == 1)
+        assert(len(alice_posts) == 1)
 
     def test_get_comments(self):
         assert False
