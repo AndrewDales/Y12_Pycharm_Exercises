@@ -3,9 +3,9 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.exc import IntegrityError
 
-from Database.sm_app_sqlalchemy.models import User, Comment, Post, Base
-from Database.sm_app_sqlalchemy.write_to_db import write_initial_data
-from Database.sm_app_sqlalchemy.controller import Controller
+from .models import User, Comment, Post, Base
+from .write_to_db import write_initial_data
+from .controller import Controller
 
 test_db_location = 'sqlite:///:memory:'
 # test_db_location = 'sqlite:///test_sm.db'
