@@ -20,3 +20,5 @@ for post in posts:
 comments = session.scalars(sa.select(Comment)).all()
 for comment in comments:
     print(comment)
+
+session.close()
