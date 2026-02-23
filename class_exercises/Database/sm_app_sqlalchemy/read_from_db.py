@@ -1,13 +1,14 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from models import User, Post, Comment, Base
+from models import User, Post, Comment
 
 # Create an engine
 engine = sa.create_engine('sqlite:///social_media.db')
 session = so.Session(bind=engine)
 
 # Query and print all users
-users = session.scalars(sa.select(User)).all()
+statement = sa.select(User)
+users = session.scalars(statement).all()
 for user in users:
     print(user)
 

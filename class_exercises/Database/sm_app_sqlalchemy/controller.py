@@ -12,7 +12,8 @@ class Controller:
 
     def set_current_user_from_name(self, name:str) -> User|None:
         with so.Session(bind=self.engine) as session:
-            user = session.scalars(sa.select(User).where(User.name == name)).one_or_none()
+            statement = sa.select(User).where(User.name == name)
+            user = session.scalars(statement).one_or_none()
 
             if user is None:
                 # Fallback behaviour: clear current user and return None
@@ -104,6 +105,7 @@ class Controller:
             post = session.get(Post, post_id)
             new_comment = Comment(user_id=user_id, comment=comment)
             post.comments.append(new_comment)
+            session.commit()
 
 if __name__ == '__main__':
     controller = Controller()

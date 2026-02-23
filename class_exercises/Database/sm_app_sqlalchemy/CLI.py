@@ -1,4 +1,5 @@
 import pyinputplus as pyip
+from functools import partial
 
 from controller import Controller
 
@@ -121,11 +122,17 @@ class CLI:
         return self.user_home
 
     def select_like_post(self):
+        post_id, _ = self.choose_user_post("Like a post")
+        if post_id:
+            self.controller.like_post_toggle(post_id)
+        return self.user_home
+
+    def choose_user_post(self, title):
         viewed_user_id = self.controller.viewing_post_user_id
         viewed_user_info = self.controller.get_user_info(viewed_user_id)
         viewed_user_name = viewed_user_info['name']
 
-        self.show_title("Like posts")
+        self.show_title(title)
         print("Select a post")
 
         posts = self.controller.get_user_posts(viewed_user_name)
@@ -135,13 +142,21 @@ class CLI:
                                      prompt='\nSelect an action\n',
                                      numbered=True,
                                      )
-        if post_id := menu_items[menu_choice]:
-            self.controller.like_post_toggle(post_id)
-        return self.user_home
+        post_id = menu_items[menu_choice]
+        return post_id, viewed_user_name
+
 
     def comment_on_post(self):
-        print('Commenting not yet implemented')
-        return self.user_home
+        post_id, viewed_user = self.choose_user_post("Comment on a post")
+        if post_id:
+            print("Enter your comment:")
+            comment = input()
+            self.controller.comment_on_post(post_id, comment)
+
+
+        return partial(self.show_posts(viewed_user))
+
+
 
 if __name__ == '__main__':
     cli = CLI()
