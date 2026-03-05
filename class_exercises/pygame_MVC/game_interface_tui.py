@@ -19,12 +19,12 @@ class TextInterface:
 
     def _draw_area(self):
         self._create_area()
-        print(f"\u2554{'\u2550' * self.game.dimensions[0]}\u2557")
+        print("\u2554" + "\u2550" * self.game.dimensions[0] + "\u2557")
         for row in self.game_area:
-            row_string = f"\u2551{"".join(row)}\u2551"
+            row_string = "\u2551" + "".join(row) + "\u2551"
             row_string = row_string.replace('W', '\u2593')
             print(row_string)
-        print(f"\u255A{'\u2550' * self.game.dimensions[1]}\u255D")
+        print("\u255A" + "\u2550" * self.game.dimensions[0] + "\u255D")
 
     def _handle_input(self):
         direction = input('Enter N,E,W or S to move (Q to Quit): ')

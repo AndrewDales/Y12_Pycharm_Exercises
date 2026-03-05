@@ -19,8 +19,8 @@ class Controller:
                 # Fallback behaviour: clear current user and return None
                 self.current_user_id = None
                 return None
-
-            self.current_user_id = user.id
+            else:
+                self.current_user_id = user.id
         return user
 
     def get_user_names(self) -> list[str]:
@@ -61,7 +61,6 @@ class Controller:
                           for post in user.posts]
             self.viewing_post_user_id = user.id
         return posts_info
-
 
     def get_comments(self, post_id) -> list[dict]:
         with so.Session(bind=self.engine) as session:

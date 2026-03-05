@@ -46,11 +46,10 @@ class GameGUI:
 
     @staticmethod
     def _convert_position(pos: Position, center: bool = False) -> tuple[int, int]:
-        gx, gy = (SQUARE_SIZE * pos.col, SQUARE_SIZE * pos.row)
-        if center:
-            gx += SQUARE_SIZE // 2
-            gy += SQUARE_SIZE // 2
-        return gx, gy
+        """ Convert a grid position in the game to an (x, y) coordinate
+                if centre is false the position returned is top-left and if center is true
+                the position returned is the centre """
+        ...
 
     def main_loop(self):
         while self.running:
@@ -62,41 +61,34 @@ class GameGUI:
 
     def _handle_input(self):
         """ Checks key presses and adjusts GameGUI attributes depending on the presses """
-        self.move_direction = None
+
         for event in pygame.event.get():
             # Quit conditions
             if (event.type == QUIT or
                     event.type == KEYDOWN and event.key == K_ESCAPE):
                 self.running = False
 
-            # Checks for movement keys
-            if event.type == KEYDOWN and event.key in self.key_moves:
-                self.move_direction = self.key_moves[event.key]
+            # Checks for movement keys amd sets self.move_direction according to the key pressed.
+            # Otherwise, set self.move_direction to None
+            ...
 
     def _process_game_logic(self):
         """ Implements character moves and checks if player has reached the exit """
-        if self.move_direction:
-            self.game.move_character(self.player, self.move_direction)
-        if self.game.at_exit(self.player):
-            self.running = False
+        ...
 
     def _draw(self):
-        self._draw_background()
-        self._draw_characters()
+        """draw background first then characters"""
+        ...
         pygame.display.flip()
 
     def _draw_background(self):
+        """Loop through all the game backgrounds and draw a rectangle of the appropriate colour"""
         self.screen.fill(BACKGROUND_COLORS['Floor'])
-        for bg in self.game.backgrounds:
-            grid_x, grid_y = self._convert_position(bg.pos)
-            color = BACKGROUND_COLORS[bg.name]
-            pygame.draw.rect(self.screen, color, (grid_x, grid_y, SQUARE_SIZE, SQUARE_SIZE))
+        ...
 
     def _draw_characters(self):
-        for character in self.game.characters:
-            coord_pos = self._convert_position(character.pos, True)
-            pygame.draw.circle(self.screen, PLAYER_COLOR, coord_pos,20)
-
+        """Loop through the characters and draw a circle for each character"""
+        ...
 
 if __name__ == "__main__":
     game = GameGUI()
