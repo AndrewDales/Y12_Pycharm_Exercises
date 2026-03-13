@@ -44,6 +44,9 @@ class GameGUI:
                                                self.game.dimensions[0] * SQUARE_SIZE])
         self.running = True
 
+        self.player_image = pygame.image.load('assets/player.png').convert_alpha()
+        self.player_rect = self.player_image.get_rect()
+
     @staticmethod
     def _convert_position(pos: Position, center: bool = False) -> tuple[int, int]:
         gx, gy = (SQUARE_SIZE * pos.col, SQUARE_SIZE * pos.row)
@@ -95,7 +98,11 @@ class GameGUI:
     def _draw_characters(self):
         for character in self.game.characters:
             coord_pos = self._convert_position(character.pos, True)
-            pygame.draw.circle(self.screen, PLAYER_COLOR, coord_pos,20)
+            # pygame.draw.circle(self.screen, PLAYER_COLOR, coord_pos, 20)
+
+            self.player_rect.center = coord_pos
+            self.screen.blit(self.player_image, self.player_rect)
+
 
 
 if __name__ == "__main__":
